@@ -15,7 +15,7 @@ def parse_args():
         "--width", "-w", type=int, default=1024, help="フレーム幅 (デフォルト: 1024)"
     )
     parser.add_argument(
-        "--height", "-h", type=int, default=576, help="フレーム高さ (デフォルト: 576)"
+        "--height", type=int, default=576, help="フレーム高さ (デフォルト: 576)"
     )
     parser.add_argument(
         "--fps", "-f", type=int, default=30, help="フレームレート (デフォルト: 30)"
