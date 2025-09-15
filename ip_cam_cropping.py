@@ -48,27 +48,20 @@ class IPCamCroppingServer:
         x1, y1 = top_left
         x2, y2 = bottom_right
 
-        print(f"座標判定: top_left=({x1}, {y1}), bottom_right=({x2}, {y2})")
-
         # 各象限での回転角度を判定
         if x1 <= x2 and y1 <= y2:
             # top_leftが左上、bottom_rightが右下: 正常
-            print("判定: 正常配置 (0度回転)")
             return 0
         elif x1 >= x2 and y1 >= y2:
             # top_leftが右下、bottom_rightが左上: 180度回転
-            print("判定: 180度回転が必要")
             return 180
         elif x1 <= x2 and y1 >= y2:
             # top_leftが左下、bottom_rightが右上: 90度回転
-            print("判定: 90度回転が必要")
             return 90
         elif x1 >= x2 and y1 <= y2:
             # top_leftが右上、bottom_rightが左下: 270度回転
-            print("判定: 270度回転が必要")
             return 270
         else:
-            print("判定: 不明な配置 (0度回転)")
             return 0
 
     def crop_and_process_region(self, frame, region_config):
@@ -105,19 +98,10 @@ class IPCamCroppingServer:
             rotation_mode = region_config.get("rotation_mode", "auto")
             if rotation_mode == "auto":
                 rotation_angle = self.calculate_rotation_angle(top_left, bottom_right)
-                print(
-                    f"領域 {region_config.get('name', 'unknown')}: 自動回転角度 = {rotation_angle}度"
-                )
             else:
                 rotation_angle = region_config.get("rotation_angle", 0)
-                print(
-                    f"領域 {region_config.get('name', 'unknown')}: 手動回転角度 = {rotation_angle}度"
-                )
 
             if rotation_angle != 0:
-                print(
-                    f"領域 {region_config.get('name', 'unknown')}: {rotation_angle}度回転を適用中..."
-                )
                 # 回転中心を計算
                 center_x = cropped.shape[1] // 2
                 center_y = cropped.shape[0] // 2
@@ -131,9 +115,6 @@ class IPCamCroppingServer:
                 cropped = cv2.warpAffine(
                     cropped, rotation_matrix, (cropped.shape[1], cropped.shape[0])
                 )
-                print(f"領域 {region_config.get('name', 'unknown')}: 回転完了")
-            else:
-                print(f"領域 {region_config.get('name', 'unknown')}: 回転なし")
 
             # 後加工（正方形リサイズと白背景塗りつぶし）
             output_size = region_config.get("output_size", 224)
