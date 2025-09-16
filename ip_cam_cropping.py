@@ -33,7 +33,7 @@ class IPCamCroppingServer:
 
             self.doi_regions = config.get("doi_regions", [])
             self.server_settings = config.get(
-                "server_settings", {"host": "127.0.0.1", "port": 5000}
+                "server_settings", {"host": "127.0.0.1", "port": 5001}
             )
 
             print(f"設定ファイルを読み込みました: {len(self.doi_regions)}個のDOI領域")
@@ -102,18 +102,41 @@ class IPCamCroppingServer:
                 rotation_angle = region_config.get("rotation_angle", 0)
 
             if rotation_angle != 0:
-                # 回転中心を計算
+                # 回転方向を修正（逆回転にする）
+                corrected_angle = -rotation_angle
+                
+                # 90度・270度回転時は幅と高さを入れ替える
+                if rotation_angle in [90, 270]:
+                    output_width = cropped.shape[0]  # 高さを幅に
+                    output_height = cropped.shape[1]  # 幅を高さに
+                else:
+                    output_width = cropped.shape[1]   # 通常の幅
+                    output_height = cropped.shape[0]  # 通常の高さ
+
+                # 回転中心を元画像の中心に設定
                 center_x = cropped.shape[1] // 2
                 center_y = cropped.shape[0] // 2
 
                 # 回転行列を作成
                 rotation_matrix = cv2.getRotationMatrix2D(
-                    (center_x, center_y), rotation_angle, 1.0
+                    (center_x, center_y), corrected_angle, 1.0
                 )
+
+                # 回転後の境界ボックスを計算して余白を除去
+                cos_val = abs(rotation_matrix[0, 0])
+                sin_val = abs(rotation_matrix[0, 1])
+                
+                # 新しい境界ボックスのサイズを計算
+                new_width = int((cropped.shape[1] * cos_val) + (cropped.shape[0] * sin_val))
+                new_height = int((cropped.shape[1] * sin_val) + (cropped.shape[0] * cos_val))
+                
+                # 回転行列を調整（平行移動を追加）
+                rotation_matrix[0, 2] += (new_width - cropped.shape[1]) / 2
+                rotation_matrix[1, 2] += (new_height - cropped.shape[0]) / 2
 
                 # 回転実行
                 cropped = cv2.warpAffine(
-                    cropped, rotation_matrix, (cropped.shape[1], cropped.shape[0])
+                    cropped, rotation_matrix, (new_width, new_height)
                 )
 
             # 後加工（正方形リサイズと白背景塗りつぶし）
@@ -429,7 +452,7 @@ def main():
         "--host", default="127.0.0.1", help="サーバーホスト (デフォルト: 127.0.0.1)"
     )
     parser.add_argument(
-        "--port", "-p", type=int, default=5000, help="サーバーポート (デフォルト: 5000)"
+        "--port", "-p", type=int, default=5001, help="サーバーポート (デフォルト: 5001)"
     )
     parser.add_argument(
         "--create-config", action="store_true", help="DOI設定作成モードで起動"
