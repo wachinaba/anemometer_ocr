@@ -1,0 +1,64 @@
+{
+  "doi_regions": [
+    {
+      "name": "region_1",
+      "top_left": [
+        474,
+        314
+      ],
+      "bottom_right": [
+        718,
+        472
+      ],
+      "rotation_mode": "auto",
+      "rotation_angle": 0,
+      "output_size": 224
+    },
+    {
+      "name": "region_2",
+      "top_left": [
+        1030,
+        314
+      ],
+      "bottom_right": [
+        1296,
+        482
+      ],
+      "rotation_mode": "auto",
+      "rotation_angle": 0,
+      "output_size": 224
+    },
+    {
+      "name": "region_3",
+      "top_left": [
+        2616,
+        304
+      ],
+      "bottom_right": [
+        2876,
+        474
+      ],
+      "rotation_mode": "auto",
+      "rotation_angle": 0,
+      "output_size": 224
+    },
+    {
+      "name": "region_4",
+      "top_left": [
+        3166,
+        302
+      ],
+      "bottom_right": [
+        3432,
+        456
+      ],
+      "rotation_mode": "auto",
+      "rotation_angle": 0,
+      "output_size": 224
+    }
+  ],
+  "server_settings": {
+    "host": "127.0.0.1",
+    "port": 5001
+  }
+}
